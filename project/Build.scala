@@ -25,7 +25,7 @@ object Build extends Build {
     libraryDependencies ++= Seq(
       "com.amazonaws" % "aws-java-sdk" % "1.3.26",
       "org.scalatest" %% "scalatest" % "1.9.2" % "test"
-    )) ++ commonSettings ++ bintraySettings
+    )) ++ commonSettings
   )
 
   lazy val sbtElasticBeanstalkPlugin = Project(
@@ -42,7 +42,7 @@ object Build extends Build {
     ) ++ (if(sv.startsWith("2.10")) Seq (
         "org.scala-lang" % "scala-actors" % sv
       ) else Seq())  
-    }) ++ commonSettings ++ bintraySettings
+    }) ++ commonSettings 
   ).dependsOn(sbtElasticBeanstalkCore).aggregate(sbtElasticBeanstalkCore)
 
   def commonSettings = Defaults.defaultSettings ++
@@ -62,7 +62,7 @@ object Build extends Build {
     publishArtifact in (Compile, packageDoc) := false,
     publishArtifact in (Compile, packageSrc) := false,
     licenses += ("Apache-2.0", url("http://www.apache.org/licenses/LICENSE-2.0.html"))
-    ) 
+    ) ++ bintraySettings
     
   def bintraySettings = seq(bintrayPublishSettings:_*) ++ Seq(
     repository in bintray := "sbt-plugins",
