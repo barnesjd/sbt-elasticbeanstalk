@@ -19,14 +19,13 @@ object Build extends Build {
   lazy val sbtElasticBeanstalkCore = Project(
     "sbt-elasticbeanstalk-core",
     file("core"),
-    settings = commonSettings
-  ).settings(
-    publishMavenStyle := true,
-    sbtPlugin := false,
+    settings = Seq(
+    publishMavenStyle := false,
+    sbtPlugin := true, // Why does this make bintray happy??
     libraryDependencies ++= Seq(
       "com.amazonaws" % "aws-java-sdk" % "1.3.26",
       "org.scalatest" %% "scalatest" % "1.9.2" % "test"
-    )
+    )) ++ commonSettings ++ bintraySettings
   )
 
   lazy val sbtElasticBeanstalkPlugin = Project(
@@ -35,7 +34,6 @@ object Build extends Build {
     settings = Seq(
     publishMavenStyle := false,
     sbtPlugin := true,
-    resolvers += Resolver.url("SQS Ivy", url("http://sqs.github.com/repo"))(Resolver.ivyStylePatterns),
     libraryDependencies <++= scalaVersion { sv => Seq(
       "com.fasterxml.jackson.core" % "jackson-core" % "2.1.1",
       "com.fasterxml.jackson.core" % "jackson-databind" % "2.1.1",
@@ -43,8 +41,8 @@ object Build extends Build {
       "org.bouncycastle" % "bcprov-jdk16" % "1.46" 
     ) ++ (if(sv.startsWith("2.10")) Seq (
         "org.scala-lang" % "scala-actors" % sv
-      ) else Seq()) 
-    }) ++ commonSettings
+      ) else Seq())  
+    }) ++ commonSettings ++ bintraySettings
   ).dependsOn(sbtElasticBeanstalkCore).aggregate(sbtElasticBeanstalkCore)
 
   def commonSettings = Defaults.defaultSettings ++
@@ -64,7 +62,7 @@ object Build extends Build {
     publishArtifact in (Compile, packageDoc) := false,
     publishArtifact in (Compile, packageSrc) := false,
     licenses += ("Apache-2.0", url("http://www.apache.org/licenses/LICENSE-2.0.html"))
-    ) ++ bintraySettings
+    ) 
     
   def bintraySettings = seq(bintrayPublishSettings:_*) ++ Seq(
     repository in bintray := "sbt-plugins",
